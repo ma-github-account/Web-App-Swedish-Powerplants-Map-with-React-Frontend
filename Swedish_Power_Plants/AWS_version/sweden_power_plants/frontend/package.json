@@ -1,0 +1,49 @@
+{
+  "name": "frontend",
+  "proxy": "http://127.0.0.1:8000",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "axios": "^0.21.1",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "leaflet-control-geocoder": "^2.4.0",
+    "leaflet.browser.print": "^2.0.2",
+    "react": "^17.0.2",
+    "react-bootstrap": "^1.6.8",
+    "react-dom": "^17.0.2",
+    "react-leaflet": "^3.2.5",
+    "react-redux": "^7.2.9",
+    "react-router-bootstrap": "^0.25.0",
+    "react-router-dom": "^5.3.4",
+    "react-scripts": "^5.0.1",
+    "react-transition-group": "^4.4.5",
+    "redux": "^4.2.1",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <circle cx="24" cy="24" r="22" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+  <!-- leaf -->
+  <path d="M32 12c2 12-4 20-14 20-3 0-5-1-6-2 1-11 8-17 20-18z"
+        fill="#3fa34d" stroke="#25702f" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M30 14c-6 4-11 10-14 18" fill="none" stroke="#1f5c27" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- flame -->
+  <path d="M24 44c-4 0-7-2.6-7-6.2 0-3.4 3-5 4.2-8.3.9 2 2.4 2.8 3.3 4 .8-1 1-2 .8-3.3 2.6 1.9 5.7 4.4 5.7 7.6 0 3.6-3 6.2-7 6.2z"
+        fill="#ff8c1a" stroke="#c4560b" stroke-width="1.4" stroke-linejoin="round"/>
+</svg>

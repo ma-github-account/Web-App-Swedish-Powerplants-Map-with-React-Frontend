@@ -1,0 +1,996 @@
+/* ===== GLOBAL ===== */
+
+/* Light-mode text scale. The bundled Bootstrap theme sets the body colour to a
+   mid-grey (#55595c) and the earlier custom styles leaned on a #8a949e grey for
+   labels - that one is only ~3.1:1 on white and fails WCAG AA outright. These
+   three tokens are all AA or better on a white background:
+     --spp-text       15.8:1   headings, table text, values
+     --spp-text-soft   8.9:1   secondary body copy, nav
+     --spp-text-dim    5.9:1   small caps labels, counts, meta   */
+:root {
+  --spp-text: #1b2430;
+  --spp-text-soft: #3f4a57;
+  --spp-text-dim: #5a6572;
+}
+
+body {
+  font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--spp-text);
+  /* The theme ships `font-weight:200; letter-spacing:1px`. Ubuntu is not
+     installed on Windows, so this fell back to Segoe UI Light: hairline strokes
+     that antialias to grey and read as washed out no matter how dark the
+     colour token is. Colour was never the whole problem - stroke weight was. */
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* The bundled theme hard-codes color:#55595c in 23 separate rules, several of
+   them more specific than `body`, so inheritance alone does not reach them.
+   `.table-hover tbody tr:hover` was the most visible: hovering any table row
+   reverted that row's text - including an expanded detail panel - to grey.
+   Scoped away from dark mode so those rules stay in charge there. */
+body:not([data-theme="dark"]) .table,
+body:not([data-theme="dark"]) .table-hover tbody tr:hover,
+body:not([data-theme="dark"]) .table .thead-light th,
+body:not([data-theme="dark"]) .card,
+body:not([data-theme="dark"]) .form-control,
+body:not([data-theme="dark"]) .form-control:focus,
+body:not([data-theme="dark"]) .form-control-plaintext,
+body:not([data-theme="dark"]) .custom-select,
+body:not([data-theme="dark"]) .custom-file-label,
+body:not([data-theme="dark"]) .custom-file-label::after,
+body:not([data-theme="dark"]) .input-group-text,
+body:not([data-theme="dark"]) .modal-content,
+body:not([data-theme="dark"]) .dropdown-menu,
+body:not([data-theme="dark"]) .dropdown-item,
+body:not([data-theme="dark"]) .btn,
+body:not([data-theme="dark"]) .btn:hover,
+body:not([data-theme="dark"]) .nav-tabs .nav-link.active,
+body:not([data-theme="dark"]) .list-group-item-action,
+body:not([data-theme="dark"]) .list-group-item-action:focus,
+body:not([data-theme="dark"]) .list-group-item-action:hover,
+body:not([data-theme="dark"]) .list-group-item-action:active {
+  color: var(--spp-text);
+}
+
+/* Buttons that set their own text colour keep it. */
+body:not([data-theme="dark"]) .btn-primary,
+body:not([data-theme="dark"]) .btn-danger,
+body:not([data-theme="dark"]) .btn-info,
+body:not([data-theme="dark"]) .btn-success {
+  color: #fff;
+}
+
+.text-muted { color: var(--spp-text-dim) !important; }
+
+.form-control::placeholder { color: #78838f; }
+
+
+/* ----- Semantic colours the theme ships at too low a contrast -----
+   These apply in both themes: white on the stock amber is 1.95:1, which is
+   unreadable regardless of the surrounding page. */
+
+.btn-warning,
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:not(:disabled):not(.disabled):active {
+  /* Bootstrap's own default is dark text on amber, for exactly this reason. */
+  color: var(--spp-text) !important;
+  background-color: #f0ad4e;
+  border-color: #e09b36;
+}
+
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:not(:disabled):not(.disabled):active {
+  background-color: #c0392b;   /* 5.4:1 with white, up from 3.96:1 */
+  border-color: #a93226;
+  color: #fff !important;
+}
+
+.badge-info {
+  background-color: #0e7490;   /* 4.9:1 with white, up from 3.16:1 */
+  color: #fff;
+}
+
+/* Leaflet's popup close button ships as light grey on light grey (3.4:1).
+   leaflet.css is injected after index.css - it arrives through the App import
+   chain - so an equally specific selector would lose the tie. The extra `body`
+   raises specificity above it without resorting to !important. */
+body .leaflet-container a.leaflet-popup-close-button,
+body .leaflet-container a.leaflet-popup-close-button span {
+  color: var(--spp-text-soft);
+}
+
+body .leaflet-container a.leaflet-popup-close-button:hover,
+body .leaflet-container a.leaflet-popup-close-button:hover span {
+  color: var(--spp-text);
+}
+
+.spp-main {
+  min-height: 78vh;
+  padding: 18px 0 8px;
+}
+
+h1 { font-size: 1.8rem; padding: 1rem 0; }
+h2 { font-size: 1.4rem; padding: 0.5rem 0; }
+h3 { padding: 1rem 0; }
+
+
+/* ===================================================================
+   TOP BAR  (modelled on komoot's: brand hard left, controls right,
+   one hairline bottom border and nothing else)
+   =================================================================== */
+
+.spp-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: #ffffff;
+  border-bottom: 1px solid #e6e8eb;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.spp-topbar-inner {
+  max-width: 1720px;
+  margin: 0 auto;
+  min-height: 64px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.spp-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: #12321f;
+  padding: 6px 0;
+}
+
+.spp-brand:hover { text-decoration: none; color: #12321f; }
+
+.spp-brand-text {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  white-space: nowrap;
+}
+
+.spp-topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spp-nav { display: flex; align-items: center; gap: 2px; }
+
+.spp-navlink {
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--spp-text-soft);
+  font-weight: 600;
+  font-size: 0.93rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.spp-navlink:hover { background: #f2f4f6; color: var(--spp-text); text-decoration: none; }
+.spp-navlink.is-active { color: #1c5f3c; background: #e8f4ec; }
+
+.spp-iconbtn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d7dbdf;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--spp-text-soft);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.spp-iconbtn:hover { background: #f7f8f9; color: var(--spp-text); }
+
+.spp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 9px;
+  background: #12321f;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.spp-btn-primary:hover { background: #1c5f3c; color: #fff; text-decoration: none; }
+
+.spp-burger {
+  display: none;
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d7dbdf;
+  border-radius: 9px;
+  background: #fff;
+  cursor: pointer;
+}
+
+
+/* ----- Dropdowns (Display Settings + user menu) ----- */
+
+.spp-dropdown { position: relative; }
+
+.spp-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d7dbdf;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--spp-text);
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.spp-dropdown-toggle:hover { background: #f7f8f9; }
+
+.spp-dropdown-toggle.is-open {
+  border-color: #2f7d52;
+  box-shadow: 0 0 0 3px rgba(47, 125, 82, 0.15);
+}
+
+.spp-caret { margin-left: 8px; font-size: 0.7rem; transition: transform 0.18s ease; }
+.spp-caret.is-open { transform: rotate(180deg); }
+
+.spp-dropdown-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 330px;
+  background: #fff;
+  border: 1px solid #e6e8eb;
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(16, 24, 40, 0.16);
+  padding: 14px 16px;
+  z-index: 1200;
+}
+
+.spp-dropdown-panel--narrow { min-width: 200px; padding: 8px; }
+
+.spp-dropdown-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--spp-text-dim);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #eef0f2;
+}
+
+.spp-linkbtn {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #1c5f3c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.spp-linkbtn:hover { text-decoration: underline; }
+
+.spp-dropdown-footer {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eef0f2;
+  font-size: 0.78rem;
+  color: var(--spp-text-dim);
+}
+
+.spp-dropdown-empty { color: var(--spp-text-dim); font-size: 0.88rem; margin: 8px 0; }
+
+.spp-checklist { list-style: none; margin: 0; padding: 0; }
+
+.spp-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.spp-check:hover { background: #f5f7f8; }
+
+/* Visually hidden but still focusable and still driving :checked. */
+.spp-check input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.spp-check-box {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #c3c9cf;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 10px;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.spp-check-box i { opacity: 0; }
+.spp-check input:checked + .spp-check-box { background: #2f7d52; border-color: #2f7d52; }
+.spp-check input:checked + .spp-check-box i { opacity: 1; }
+.spp-check input:focus-visible + .spp-check-box { box-shadow: 0 0 0 3px rgba(47, 125, 82, 0.25); }
+
+.spp-check-icon { flex: 0 0 auto; object-fit: contain; }
+.spp-check-label { flex: 1 1 auto; font-size: 0.92rem; color: var(--spp-text); }
+.spp-check-count {
+  flex: 0 0 auto;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--spp-text-dim);
+  background: #f0f2f4;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.spp-menuitem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--spp-text);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.spp-menuitem:hover { background: #f2f4f6; color: var(--spp-text); text-decoration: none; }
+
+/* ----- Map screen: map fills the window below the top bar ----- */
+
+.spp-maprow {
+  /* Everything below the top bar: 64px bar + 18px/8px main padding, plus a
+     pixel so sub-pixel rounding cannot introduce a scrollbar. There is no
+     footer, so the map and the info panel run to the bottom edge. */
+  height: calc(100vh - 92px);
+  min-height: 460px;
+  overflow: hidden;
+}
+
+/* `min-height: 0` on every level is what makes the panel scroll instead of the
+   page. A flex item defaults to `min-height: auto`, meaning it refuses to
+   shrink below its content - so a plant with a long description grew the card
+   past the row and pushed the whole document into a scrollbar, dragging the
+   map along with it. Zeroing the automatic minimum lets the card be clamped to
+   the row height and take its own scrollbar. */
+/* An explicit height, not just `align-items: stretch`. Bootstrap's `.row` sets
+   `flex-wrap: wrap`, so the flex line takes its cross size from the tallest
+   item rather than from the container - the column therefore grew to fit the
+   card instead of the card being clamped to the row. Resolving 100% against
+   the row's definite height sidesteps that entirely. */
+.spp-mapcol, .spp-panelcol {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.spp-mapcol > .spp-map-shell { flex: 1 1 auto; min-height: 0; position: relative; }
+.spp-map-shell > .leaflet-container { height: 100%; }
+
+/* Display Settings floats over the top-left of the map, clearing Leaflet's
+   zoom buttons. `.leaflet-container` carries z-index 1 and therefore opens its
+   own stacking context, so anything above 1 here paints over the whole map.
+   It is a DOM sibling of the map rather than a Leaflet control, so clicking
+   and scrolling inside it can never drag or zoom the map underneath. */
+.spp-map-overlay {
+  position: absolute;
+  top: 10px;
+  left: 56px;
+  z-index: 5;
+}
+
+.spp-map-overlay .spp-dropdown-toggle {
+  height: 36px;                                  /* matches the map controls opposite */
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+/* Opens leftwards from the map edge, not right-aligned like a top-bar menu. */
+.spp-map-overlay .spp-dropdown-panel {
+  right: auto;
+  left: 0;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 575px) {
+  .spp-map-overlay { top: 52px; left: 10px; }
+}
+
+.spp-panelcol > .card {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;   /* don't chain the scroll to the page */
+}
+
+@media (max-width: 991px) {
+  /* Stacked layout: let the page scroll normally instead of trapping the
+     panel in a fixed-height box. */
+  .spp-maprow { height: auto; min-height: 0; overflow: visible; }
+  .spp-mapcol { height: 65vh; margin-bottom: 1rem; overflow: visible; }
+  .spp-panelcol { height: auto; overflow: visible; }
+  .spp-panelcol > .card { overflow-y: visible; }
+}
+
+/* ----- Right-hand info panel: larger, higher-contrast text ----- */
+
+.spp-panelcol .card-body { font-size: 1.06rem; line-height: 1.55; }
+.spp-panelcol .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.6rem; }
+.spp-panelcol .card-body .card-text { font-size: 1.06rem; }
+.spp-panelcol .card-body .text-muted { color: var(--spp-text-dim) !important; }
+.spp-panelcol .card-body .small { font-size: 0.95rem; }
+.spp-panelcol .badge { font-size: 0.86rem; padding: 0.35em 0.6em; }
+
+
+/* ----- Expandable table rows ----- */
+
+.spp-clickable-row { cursor: pointer; }
+.spp-clickable-row.is-expanded { background-color: #eaf2ff !important; }
+.spp-chevron { color: var(--spp-text-dim); text-align: center; }
+.spp-clickable-row.is-expanded .spp-chevron { color: #1c5f3c; }
+
+.spp-detail-row > td { background: #f7f9fb; padding: 0 !important; }
+
+.spp-detail {
+  display: flex;
+  gap: 22px;
+  padding: 18px 20px;
+  align-items: flex-start;
+}
+
+/* Every plant photo gets the same box regardless of its native aspect ratio -
+   the source images range from tall portraits to wide panoramas. `cover` crops
+   to fill rather than letterboxing or distorting. */
+.spp-detail-media { flex: 0 0 260px; max-width: 260px; }
+
+.spp-detail-media img {
+  display: block;
+  width: 260px;
+  height: 170px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+  background: #e9edf1;
+}
+
+.spp-detail-media--icon {
+  flex-basis: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spp-detail-media--icon img { width: 96px; height: 96px; object-fit: contain; }
+
+.spp-detail-noicon {
+  width: 96px;
+  height: 96px;
+  border: 2px dashed #cfd6dd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--spp-text-dim);
+  font-size: 0.8rem;
+}
+
+.spp-detail-body { flex: 1 1 auto; min-width: 0; }
+
+.spp-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 0 0 10px;
+  margin: 0;
+}
+
+.spp-detail-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 18px;
+  margin: 0 0 10px;
+}
+
+.spp-detail-grid dt {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--spp-text-dim);
+  align-self: center;
+}
+
+.spp-detail-grid dd { margin: 0; font-size: 1rem; font-weight: 500; }
+
+.spp-detail-info {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #e4e8ec;
+  font-size: 0.97rem;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+/* The prose shown when a power plant type is unfolded. */
+.spp-detail-description {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 78ch;
+}
+
+.spp-detail-plants { margin-top: 10px; padding-top: 10px; border-top: 1px solid #e4e8ec; }
+
+.spp-detail-plants-label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--spp-text-dim);
+}
+
+.spp-detail-plants ul { margin: 6px 0 0; padding-left: 20px; }
+.spp-detail-plants li { font-size: 0.95rem; }
+
+@media (max-width: 767px) {
+  .spp-detail { flex-direction: column; }
+  .spp-detail-media { flex-basis: auto; max-width: 100%; }
+}
+
+@media (max-width: 991px) {
+  .spp-burger { display: block; }
+  .spp-topbar-right {
+    display: none;
+    width: 100%;
+    margin-left: 0;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .spp-topbar-right.is-open { display: flex; }
+  .spp-dropdown-panel { right: auto; left: 0; }
+}
+
+
+/* ===================================================================
+   LEAFLET
+   =================================================================== */
+
+/* Leaflet panes sit at z-index 400-700 and would otherwise paint over the
+   top bar and its dropdown panels. */
+.leaflet-container { z-index: 1; }
+
+.leaflet-popup-content { margin: 10px 14px; }
+
+/* --- The three top-right controls: layers, print and search ---------
+   Each plugin ships its own dimensions (layers 36px, print 26px via
+   .leaflet-bar a, geocoder 26px, and all three grow again under
+   .leaflet-touch). Force one shared 36px box so the stack lines up. */
+
+.leaflet-top.leaflet-right .leaflet-control {
+  margin: 10px 10px 0 0;
+  clear: both;
+}
+
+.leaflet-control-layers,
+.leaflet-control-browser-print,
+.leaflet-control-geocoder {
+  border: 1px solid rgba(0, 0, 0, 0.18) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28) !important;
+  /* Deliberately NOT !important: the dark-mode rule further down has to be able
+     to override it, otherwise the expanded layer list keeps a white background
+     while its labels turn light grey and become unreadable. */
+  background: #fff;
+}
+
+/* The expanded base-layer list must not be clipped by the rounded container. */
+.leaflet-control-layers-expanded {
+  overflow: visible;
+  color: var(--spp-text);
+  padding: 8px 12px 8px 10px;
+}
+
+.leaflet-control-layers-expanded label { color: var(--spp-text); margin-bottom: 2px; }
+
+.leaflet-control-layers-toggle,
+.leaflet-control-browser-print a.leaflet-browser-print,
+.leaflet-control-geocoder .leaflet-control-geocoder-icon {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  line-height: 36px !important;
+  display: block !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-size: 20px 20px !important;
+  background-color: #fff !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+}
+
+.leaflet-control-geocoder { min-width: 36px !important; min-height: 36px !important; }
+
+.leaflet-control-layers-toggle:hover,
+.leaflet-control-browser-print a.leaflet-browser-print:hover,
+.leaflet-control-geocoder .leaflet-control-geocoder-icon:hover {
+  background-color: #f4f4f4 !important;
+}
+
+/* leaflet.browser.print ships no stylesheet at all, so the button would
+   otherwise render blank. Inline SVG keeps it working offline. */
+.leaflet-control-browser-print a.leaflet-browser-print {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M18 7V3H6v4H4a2 2 0 0 0-2 2v6h4v4h12v-4h4V9a2 2 0 0 0-2-2zM8 5h8v2H8zm8 14H8v-4h8zm3-7.2a.9.9 0 1 1-.9-.9.9.9 0 0 1 .9.9z'/%3E%3C/svg%3E") !important;
+}
+
+/* The geocoder expands into a search field on click - let it. */
+.leaflet-control-geocoder.leaflet-control-geocoder-expanded {
+  width: auto !important;
+  min-width: 260px !important;
+  overflow: visible;
+}
+
+.leaflet-control-geocoder-form input {
+  height: 34px;
+  font-size: 0.9rem;
+}
+
+.leaflet-control-geocoder-alternatives { max-width: 280px; }
+
+/* The info panel image is a photo of arbitrary aspect ratio; cap it so a tall
+   picture cannot push the text off screen. */
+.card-img-top { max-height: 260px; object-fit: cover; }
+
+
+/* ===================================================================
+   GITHUB DARK MODE
+   =================================================================== */
+
+body[data-theme="dark"] {
+  background-color: #0d1117;
+  color: #e6edf3;
+}
+
+/* ----- Top bar ----- */
+body[data-theme="dark"] .spp-topbar {
+  background: #161b22;
+  border-bottom-color: #30363d;
+}
+
+body[data-theme="dark"] .spp-brand,
+body[data-theme="dark"] .spp-brand:hover { color: #e6edf3; }
+
+body[data-theme="dark"] .spp-navlink { color: #8b949e; }
+body[data-theme="dark"] .spp-navlink:hover { background: #1c2128; color: #e6edf3; }
+body[data-theme="dark"] .spp-navlink.is-active { background: #17301f; color: #56d364; }
+
+body[data-theme="dark"] .spp-iconbtn,
+body[data-theme="dark"] .spp-burger,
+body[data-theme="dark"] .spp-dropdown-toggle {
+  background: #21262d;
+  border-color: #30363d;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .spp-iconbtn:hover,
+body[data-theme="dark"] .spp-dropdown-toggle:hover { background: #30363d; }
+
+body[data-theme="dark"] .spp-btn-primary { background: #238636; }
+body[data-theme="dark"] .spp-btn-primary:hover { background: #2ea043; }
+
+body[data-theme="dark"] .spp-dropdown-panel {
+  background: #161b22;
+  border-color: #30363d;
+  box-shadow: 0 14px 36px rgba(1, 4, 9, 0.7);
+}
+
+body[data-theme="dark"] .spp-dropdown-header,
+body[data-theme="dark"] .spp-dropdown-footer {
+  color: #8b949e;
+  border-color: #21262d;
+}
+
+body[data-theme="dark"] .spp-linkbtn { color: #56d364; }
+body[data-theme="dark"] .spp-check:hover { background: #1c2128; }
+body[data-theme="dark"] .spp-check-box { border-color: #484f58; }
+body[data-theme="dark"] .spp-check input:checked + .spp-check-box {
+  background: #238636;
+  border-color: #238636;
+}
+body[data-theme="dark"] .spp-check-label { color: #e6edf3; }
+body[data-theme="dark"] .spp-check-count { background: #21262d; color: #8b949e; }
+body[data-theme="dark"] .spp-menuitem { color: #e6edf3; }
+body[data-theme="dark"] .spp-menuitem:hover { background: #1c2128; color: #e6edf3; }
+
+/* ----- Info panel + expandable rows in dark mode ----- */
+body[data-theme="dark"] .spp-panelcol .card-body .text-muted { color: #a5b0bb !important; }
+
+body[data-theme="dark"] .spp-clickable-row.is-expanded { background-color: #17301f !important; }
+body[data-theme="dark"] .spp-chevron { color: #8b949e; }
+body[data-theme="dark"] .spp-clickable-row.is-expanded .spp-chevron { color: #56d364; }
+body[data-theme="dark"] .spp-detail-row > td { background: #10151c; }
+body[data-theme="dark"] .spp-detail-title { color: #e6edf3; }
+body[data-theme="dark"] .spp-detail-grid dt,
+body[data-theme="dark"] .spp-detail-plants-label { color: #8b949e; }
+body[data-theme="dark"] .spp-detail-grid dd,
+body[data-theme="dark"] .spp-detail-info,
+body[data-theme="dark"] .spp-detail-description,
+body[data-theme="dark"] .spp-detail-plants li { color: #e6edf3; }
+body[data-theme="dark"] .spp-detail-info,
+body[data-theme="dark"] .spp-detail-plants { border-top-color: #30363d; }
+body[data-theme="dark"] .spp-detail-noicon { border-color: #30363d; color: #8b949e; }
+
+/* ----- Tables ----- */
+.table tbody td { vertical-align: middle; }
+
+body[data-theme="dark"] .table { color: #e6edf3; }
+
+body[data-theme="dark"] .table thead th {
+  background-color: #161b22;
+  color: #8b949e;
+  border-color: #30363d;
+  border-bottom: 2px solid #30363d;
+}
+
+body[data-theme="dark"] .table td,
+body[data-theme="dark"] .table th { border-color: #21262d; }
+
+body[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #161b22;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .table-striped tbody tr:nth-of-type(even) {
+  background-color: #0d1117;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: #1c2128;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .table-bordered { border-color: #30363d; }
+
+/* ----- Form controls ----- */
+body[data-theme="dark"] .form-control {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .form-control:focus {
+  background-color: #0d1117;
+  color: #e6edf3;
+  border-color: #1f6feb;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.3);
+}
+
+body[data-theme="dark"] .form-control::placeholder { color: #484f58; }
+
+body[data-theme="dark"] select.form-control option {
+  background-color: #161b22;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] input[type="file"] {
+  background-color: #0d1117;
+  border-color: #30363d;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .form-label,
+body[data-theme="dark"] label { color: #e6edf3; }
+
+/* ----- Cards / modals / alerts ----- */
+body[data-theme="dark"] .card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .card-title { color: #e6edf3; }
+
+body[data-theme="dark"] .modal-content {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .modal-header { border-bottom: 1px solid #30363d; }
+body[data-theme="dark"] .modal-footer { border-top: 1px solid #30363d; }
+body[data-theme="dark"] .modal-header .close { color: #e6edf3; opacity: 0.7; }
+
+body[data-theme="dark"] .alert-danger {
+  background-color: rgba(248, 81, 73, 0.1);
+  border-color: rgba(248, 81, 73, 0.4);
+  color: #ffa198;
+}
+
+body[data-theme="dark"] .alert-success {
+  background-color: rgba(63, 185, 80, 0.1);
+  border-color: rgba(63, 185, 80, 0.4);
+  color: #56d364;
+}
+
+/* ----- Buttons ----- */
+body[data-theme="dark"] .btn-light,
+body[data-theme="dark"] .btn-secondary {
+  background-color: #21262d !important;
+  border-color: #30363d !important;
+  color: #8b949e !important;
+  box-shadow: none !important;
+}
+
+body[data-theme="dark"] .btn-light:hover,
+body[data-theme="dark"] .btn-secondary:hover {
+  background-color: #30363d !important;
+  border-color: #8b949e !important;
+  color: #e6edf3 !important;
+}
+
+/* ----- Links, headings, footer ----- */
+body[data-theme="dark"] a:not(.btn):not(.spp-navlink):not(.spp-brand):not(.spp-menuitem):not(.spp-btn-primary):not(.leaflet-control-layers-toggle):not(.leaflet-browser-print) {
+  color: #58a6ff;
+}
+
+body[data-theme="dark"] h1,
+body[data-theme="dark"] h2,
+body[data-theme="dark"] h3,
+body[data-theme="dark"] h4 { color: #e6edf3; }
+
+body[data-theme="dark"] footer {
+  background-color: #161b22;
+  color: #8b949e;
+  border-top: 1px solid #21262d;
+}
+
+body[data-theme="dark"] .text-muted { color: #8b949e !important; }
+
+/* Leaflet's own chrome is white by default; tone it down in dark mode. */
+body[data-theme="dark"] .leaflet-popup-content-wrapper,
+body[data-theme="dark"] .leaflet-popup-tip,
+body[data-theme="dark"] .leaflet-bar a {
+  background-color: #161b22;
+  color: #e6edf3;
+  border-color: #30363d;
+}
+
+/* The expanded base-layer list: dark panel with light labels. Previously the
+   panel stayed white while the labels inherited light-grey text, which made
+   "OpenStreetMap", "Carto Light" and the rest invisible. */
+body[data-theme="dark"] .leaflet-control-layers,
+body[data-theme="dark"] .leaflet-control-browser-print,
+body[data-theme="dark"] .leaflet-control-geocoder {
+  background: #161b22;
+  border-color: #30363d !important;
+}
+
+/* `leaflet-control-layers-expanded` is added to the *same* element as
+   `leaflet-control-layers`, so it must keep the panel background - only the
+   labels inside it are transparent. */
+body[data-theme="dark"] .leaflet-control-layers-expanded {
+  background: #161b22;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .leaflet-control-layers-expanded label,
+body[data-theme="dark"] .leaflet-control-layers-base label span,
+body[data-theme="dark"] .leaflet-control-layers-overlays label span {
+  background: transparent;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .leaflet-control-layers-separator {
+  border-top-color: #30363d;
+}
+
+/* The three buttons keep their light face in dark mode. Inverting them is not
+   an option: `filter: invert()` flips the button background too, which turns
+   the print and search glyphs into blank white squares. Leaflet's own controls
+   stay light on dark maps for the same reason. */
+body[data-theme="dark"] .leaflet-control-layers-toggle,
+body[data-theme="dark"] .leaflet-control-browser-print a.leaflet-browser-print,
+body[data-theme="dark"] .leaflet-control-geocoder .leaflet-control-geocoder-icon {
+  background-color: #fff !important;
+}
+
+body[data-theme="dark"] .leaflet-control-layers-toggle:hover,
+body[data-theme="dark"] .leaflet-control-browser-print a.leaflet-browser-print:hover,
+body[data-theme="dark"] .leaflet-control-geocoder .leaflet-control-geocoder-icon:hover {
+  background-color: #e9edf1 !important;
+}
+
+body[data-theme="dark"] .leaflet-control-geocoder-form input {
+  background: #0d1117;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+}
+
+body[data-theme="dark"] .leaflet-control-geocoder-alternatives {
+  background: #161b22;
+  color: #e6edf3;
+}
+
+body[data-theme="dark"] .leaflet-control-geocoder-alternatives li a { color: #e6edf3; }
+body[data-theme="dark"] .leaflet-control-geocoder-alternatives li:hover { background: #1c2128; }
+
+
+/* ===== PAGE TRANSITIONS ===== */
+.page-enter { opacity: 0; transform: translateY(6px); }
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 220ms ease, transform 220ms ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}

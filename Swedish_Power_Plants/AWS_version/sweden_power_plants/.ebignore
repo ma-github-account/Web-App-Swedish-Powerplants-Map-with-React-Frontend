@@ -1,0 +1,37 @@
+# .ebignore replaces .gitignore for the deployment bundle, so everything that
+# must stay out has to be listed here - .gitignore is ignored entirely.
+
+# Secrets: configuration comes from `eb setenv`, never from a bundled file.
+.env
+.env.*
+!.env.example
+
+# Regenerated on the instance by collectstatic --clear. Shipping a stale copy
+# is what produces a blank white screen: index.html asks for the new hashed
+# filenames while the bundle still holds the previous build's.
+staticfiles/
+
+# Dependencies and local environments
+venv/
+.venv/
+frontend/node_modules/
+frontend/.eslintcache
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Contains a password hash and is not needed at runtime - RDS is already seeded.
+data_export.json
+
+.vscode/
+.idea/
+*.log
+db.sqlite3
+.git/
+
+# NOTE: frontend/build/ is deliberately NOT ignored. Django serves index.html
+# from there as a template and collects /static from it, so the compiled bundle
+# must travel with the deployment.
+# NOTE: static/images/ is also kept - MEDIA_ROOT for local runs and the source
+# for `manage.py upload_media_to_s3`.

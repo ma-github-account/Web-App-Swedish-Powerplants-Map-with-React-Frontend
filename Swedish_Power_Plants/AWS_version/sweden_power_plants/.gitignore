@@ -1,0 +1,38 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+venv/
+.venv/
+env/
+
+# Secrets. Configuration comes from `eb setenv`; .env.example is the template.
+.env
+.env.*
+!.env.example
+
+# Regenerated on the instance by `collectstatic --clear` during deployment.
+staticfiles/
+
+frontend/node_modules/
+frontend/.eslintcache
+
+.vscode/
+.idea/
+*.log
+db.sqlite3
+
+# Elastic Beanstalk Files
+# config.yml records the application and environment names created locally by
+# `eb init`, so it is not committed.
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# NOTE: frontend/build/ is deliberately NOT ignored. Django serves index.html
+# from there as a template and collects /static from it, so the compiled bundle
+# must be in the repository for `eb deploy` to produce a working site.
+
+# NOTE: static/images/ is deliberately NOT ignored either. Media is served from
+# S3 in this edition, but these local files are the source that
+# `manage.py upload_media_to_s3` pushes into the bucket.

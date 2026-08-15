@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+venv/
+.venv/
+env/
+
+# Nothing to configure in this edition, but keep stray env files out anyway.
+.env
+.env.*
+
+staticfiles/
+
+frontend/node_modules/
+frontend/.eslintcache
+
+# NOTE: frontend/build/ is deliberately NOT ignored. Shipping the compiled
+# bundle is what lets someone clone this and run it without Node installed -
+# the same choice the employees_local project makes.
+
+.vscode/
+.idea/
+*.log
+db.sqlite3
+
+# NOTE: static/images/ is intentionally NOT ignored. The marker icons and plant
+# photos are part of the application - without them the map has no icons and
+# every plant shows "no image available". See README for photo attribution.
