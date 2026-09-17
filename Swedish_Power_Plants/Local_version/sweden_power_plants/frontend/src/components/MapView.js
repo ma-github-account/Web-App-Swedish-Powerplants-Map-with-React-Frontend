@@ -45,8 +45,14 @@ function MapView({ places, onSelect, height = '78vh' }) {
                 checked live. */}
             <LayersControl position='topright'>
                 <LayersControl.BaseLayer checked name='OpenStreetMap'>
+                    {/* Django's SecurityMiddleware defaults SECURE_REFERRER_POLICY
+                        to 'same-origin', which strips the Referer from cross-origin
+                        tile requests. OSM's servers answer referer-less requests with
+                        a 403 'Access blocked' tile, so set the policy per-layer here
+                        rather than weakening it site-wide. */}
                     <TileLayer
-                        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                        url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+                        referrerPolicy='strict-origin-when-cross-origin'
                         attribution={OSM_ATTRIBUTION}
                         maxZoom={19}
                     />

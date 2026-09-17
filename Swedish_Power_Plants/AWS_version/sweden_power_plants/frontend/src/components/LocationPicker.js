@@ -28,8 +28,12 @@ function LocationPicker({ latitude, longitude, onPick }) {
             zoom={position ? 9 : 5}
             style={{ height: '280px', width: '100%', borderRadius: '6px' }}
         >
+            {/* Sends the origin (not the path) so OSM can identify the app - see
+                the note in MapView.js. Without it their servers return a 403
+                'Access blocked' tile instead of map imagery. */}
             <TileLayer
-                url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+                referrerPolicy='strict-origin-when-cross-origin'
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             <ClickHandler onPick={onPick} />
